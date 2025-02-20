@@ -50,8 +50,6 @@ sloam_ws/
  │    └── models/         # Create this folder to store segmentation models (ONNX)
 ```
 
----
-
 ## Dependency Installation
 
 Install the required system packages and ROS dependencies (for ROS Noetic on Ubuntu 20.04):
@@ -287,7 +285,12 @@ You can run SLOAM using Docker or install locally.
    SLOAMWS="$HOME/ros/sloam_ws"
    BAGS_DIR="$HOME/bags"
    ```
-
+    Add:
+     ```bash
+     --env="XAUTHORITY=$XAUTHORITY" \
+     --env="XAUTHORITY=/run/user/1000/gdm/Xauthority" \
+     --volume="/run/user/1000/gdm/Xauthority:/run/user/1000/gdm/Xauthority:ro" \
+     ```
 3. **Run the Container**
 
    ```bash
@@ -302,6 +305,41 @@ You can run SLOAM using Docker or install locally.
    cd /opt/sloam_ws && ls src
    ```
 
+   Configure tmux:
+   ```bash
+    nano ~/.tmux.conf
+   ```
+   Now save the file: `CTRL+X , Y, ENTER`
+   
+   Add these lines:
+   ```
+    # Enable tmux to use the system clipboard
+    set-option -g set-clipboard on
+    
+    # Bind the "y" key in copy mode (using vi keys) to copy the selection to the clipboard
+    bind-key -T copy-mode y send-keys -X copy-pipe-and-cancel "xclip -selection clipboard -in"
+   ```
+   Then
+   ```
+    tmux source-file ~/.tmux.conf
+   ```
+
+    ### tmux shotcuts:
+     ```
+     Ctrl+b then % --> open another hor pane
+     ```
+     ```
+     Ctrl+b then " --> open another ver pane
+     ```
+     ```
+     Ctrl+b [ % --> start copy mode
+     ```
+     ```
+     Ctrl+b then space --> select text
+     ```
+     ```
+     y --> save to clipboard
+     ```
    Launch SLOAM (for simulated data, for example):
 
    ```bash
