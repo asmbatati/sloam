@@ -68,7 +68,8 @@ sudo apt-get install -y \
     libspdlog-dev \
     libcurl4-openssl-dev \
     libpcap-dev \
-    cmake
+    cmake \
+    ros-noetic-rqt*
 ```
 
 Then, update rosdep and install additional ROS dependencies:
