@@ -1,54 +1,92 @@
+Below is the README written in Markdown:
 
 ---
 
-# SLOAM & LLOL
+# SLOAM & LLOL: Semantic Lidar Odometry, Mapping, and Low-Latency Odometry for Spinning Lidars
 
-**SLOAM** (Semantic Lidar Odometry and Mapping in Forests) is a ROS framework that fuses LiDAR data with semantic segmentation for forest mapping. **LLOL** (Low-Latency Odometry for Spinning Lidars) provides a low-latency odometry backbone for spinning LiDAR sensors.
+<p align="center">
+  <img src="./doc/sloam_zamboni.gif" alt="SLOAM Demo" width="800"/>
+</p>
 
-> **Note:** We recommend running SLOAM inside Docker. However, a local installation is also supported.
+**SLOAM** (Semantic Lidar Odometry and Mapping in Forests) is a ROS-based framework designed for forest inventory. It fuses LiDAR data with semantic segmentation to produce a semantic map.  
+**LLOL** (Low-Latency Odometry for Spinning Lidars) serves as the odometry backbone, providing a low-latency estimate for LiDAR odometry.
+
+> **Note:** Although we recommend using Docker to run SLOAM, you can also install and run it locally.
 
 ---
 
-## Workspace Structure
+## Table of Contents
 
-Create a workspace with the following directory structure:
+- [Workspace Setup](#workspace-setup)
+- [Dependency Installation](#dependency-installation)
+- [Building External Libraries](#building-external-libraries)
+  - [glog](#glog)
+  - [fmt (with PIC)](#fmt-with-pic-enabled)
+  - [Abseil](#abseil)
+  - [Sophus](#sophus)
+- [Cloning and Building the ROS Workspace](#cloning-and-building-the-ros-workspace)
+- [Exporting Pretrained Segmentation Models to ONNX](#4-exporting-pretrained-segmentation-models-to-onnx)
+- [Running SLOAM](#5-running-sloam)
+  - [Docker-Based Run](#docker-based-run)
+  - [Local Installation](#local-installation)
+- [Running LLOL for Odometry](#6-running-llol-for-odometry)
+- [Parameter Tuning & Development](#7-parameter-tuning--development)
+- [Citations](#8-citations)
+
+---
+
+## Workspace Setup
+
+Create a ROS workspace with the following structure on your host machine:
 
 ```
 sloam_ws/
  ├── src/
- │    ├── sloam           (clone from https://github.com/KumarRobotics/sloam)
- │    ├── sloam_msgs      (clone from https://github.com/KumarRobotics/sloam)
- │    ├── ouster_decoder  (clone from https://github.com/KumarRobotics/ouster_decoder)
- │    ├── ouster_ros      (clone from https://github.com/ouster-lidar/ouster-ros)
- │    ├── llol            (clone from https://github.com/versatran01/llol)
- │    └── models/         (create this folder and add segmentation models in ONNX format)
+ │    ├── sloam           # Clone from https://github.com/KumarRobotics/sloam
+ │    ├── sloam_msgs      # Clone from https://github.com/KumarRobotics/sloam
+ │    ├── ouster_decoder  # Clone from https://github.com/KumarRobotics/ouster_decoder
+ │    ├── ouster_ros      # Clone from https://github.com/ouster-lidar/ouster-ros
+ │    ├── llol            # Clone from https://github.com/versatran01/llol
+ │    └── models/         # Create this folder to store segmentation models (ONNX)
 ```
 
 ---
 
-## Installation & Dependencies
+## Dependency Installation
 
-### System & ROS Packages (Ubuntu 20.04 / ROS Noetic)
+Install the required system packages and ROS dependencies (for ROS Noetic on Ubuntu 20.04):
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y g++ libeigen3-dev git python3-catkin-tools \
-    ros-noetic-pcl-ros ros-noetic-rviz build-essential \
-    libjsoncpp-dev libspdlog-dev libcurl4-openssl-dev libpcap-dev cmake
+sudo apt-get install -y \
+    g++ \
+    libeigen3-dev \
+    git \
+    python3-catkin-tools \
+    ros-noetic-pcl-ros \
+    ros-noetic-rviz \
+    build-essential \
+    libjsoncpp-dev \
+    libspdlog-dev \
+    libcurl4-openssl-dev \
+    libpcap-dev \
+    cmake
 ```
 
-Run rosdep:
+Then, update rosdep and install additional ROS dependencies:
 
 ```bash
 rosdep update
 rosdep install --from-paths . --ignore-src -y -r --as-root apt:false
 ```
 
-### External Libraries
+---
 
-Install these libraries either via apt or build from source as follows:
+## Building External Libraries
 
-#### glog
+The GitHub Actions build file for SLOAM installs some dependencies from source. Follow these steps in a temporary directory (e.g., `/tmp`):
+
+### glog
 
 ```bash
 cd /tmp
@@ -60,40 +98,44 @@ cmake --build build
 sudo cmake --build build --target install
 ```
 
-#### fmt (Ensure PIC is enabled)
+### fmt (with PIC enabled)
 
-Either install via apt:
-```bash
-sudo apt-get install libfmt-dev
-```
-*or* build from source:
+To avoid linking issues, build fmt with position-independent code:
 
 ```bash
 cd /tmp
 git clone --depth 1 --branch 8.1.0 https://github.com/fmtlib/fmt.git
 cd fmt
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE \
-      -DCMAKE_CXX_STANDARD=17 -DFMT_TEST=False ..
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE \
+      -DCMAKE_CXX_STANDARD=17 \
+      -DFMT_TEST=False ..
 make -j$(nproc)
 sudo make install
 ```
 
-#### Abseil
+*Tip:* If a non‑PIC version is already installed in `/usr/local/lib`, consider renaming it to avoid conflicts.
+`sudo mv /usr/local/lib/libfmt.a /usr/local/lib/libfmt.a.bak`
+
+### Abseil
 
 ```bash
 cd /tmp
 git clone --depth 1 --branch 20220623.0 https://github.com/abseil/abseil-cpp.git
 cd abseil-cpp
 mkdir build && cd build
-cmake -DABSL_BUILD_TESTING=OFF -DCMAKE_CXX_STANDARD=17 \
-      -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_POSITION_INDEPENDENT_CODE=ON ..
+cmake -DABSL_BUILD_TESTING=OFF \
+      -DCMAKE_CXX_STANDARD=17 \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON ..
 sudo cmake --build . --target install
 ```
 
-Verify that `abslConfig.cmake` is located (e.g., `/usr/lib/x86_64-linux-gnu/cmake/absl/abslConfig.cmake`).
+Verify that the configuration file is installed at:  
+`/usr/lib/x86_64-linux-gnu/cmake/absl/abslConfig.cmake`
 
-#### Sophus
+### Sophus
 
 ```bash
 cd /tmp
@@ -107,145 +149,169 @@ sudo make install
 
 ---
 
-## Building the Workspace
+## Cloning and Building the ROS Workspace
 
-1. **Clone Repositories:**
+### Clone the Repositories
 
-   ```bash
-   mkdir -p ~/sloam_ws/src && cd ~/sloam_ws/src
-   git clone https://github.com/KumarRobotics/sloam.git
-   git clone https://github.com/KumarRobotics/ouster_decoder.git
-   git clone https://github.com/ouster-lidar/ouster-ros.git
-   git clone https://github.com/versatran01/llol.git
-   mkdir models
-   ```
+```bash
+mkdir -p ~/sloam_ws/src && cd ~/sloam_ws/src
+git clone https://github.com/KumarRobotics/sloam.git
+git clone https://github.com/KumarRobotics/ouster_decoder.git
+git clone https://github.com/ouster-lidar/ouster-ros.git
+git clone https://github.com/versatran01/llol.git
+mkdir models  # Create the models folder
+```
 
-2. **Update llol CMakeLists.txt:**
+### Update llol's CMake Configuration
 
-   In `llol/CMakeLists.txt`, add:
-   ```cmake
-   include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-   ```
-   This ensures that headers (e.g., `sv/util/nlls.h`) are found.
+In the top-level `llol/CMakeLists.txt`, add the following line after the project declaration to ensure that headers are found:
 
-3. **Build with catkin_make:**
+```cmake
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+```
 
-   Clean and build the workspace, specifying dependency paths:
-   ```bash
-   cd ~/sloam_ws
-   rm -rf build devel
-   catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release \
-     -Dabsl_DIR=/usr/lib/x86_64-linux-gnu/cmake/absl \
-     -Dbenchmark_DIR=/usr/lib/x86_64-linux-gnu/cmake/benchmark \
-     -Dspdlog_DIR=/usr/lib/x86_64-linux-gnu/cmake/spdlog \
-     -DBUILD_BENCHMARK=OFF
-   ```
+### Build the Workspace
 
-   *Note:* `-DBUILD_BENCHMARK=OFF` disables benchmark executables that lack a `main()`.
+Clean any previous builds and build with the proper dependency paths:
 
----
+```bash
+cd ~/sloam_ws
+rm -rf build devel
+catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release \
+  -Dabsl_DIR=/usr/lib/x86_64-linux-gnu/cmake/absl \
+  -Dbenchmark_DIR=/usr/lib/x86_64-linux-gnu/cmake/benchmark \
+  -Dspdlog_DIR=/usr/lib/x86_64-linux-gnu/cmake/spdlog \
+  -DBUILD_BENCHMARK=OFF
+```
 
-## Exporting Pretrained Segmentation Models to ONNX
-
-SLOAM uses a segmentation network (e.g., RangeNet++) for tree segmentation. Follow these steps (e.g., in Google Colab):
-
-1. **Install ONNX:**
-
-   ```python
-   !pip install onnx
-   ```
-
-2. **Download and Extract a Pretrained Model:**
-
-   ```bash
-   !wget http://www.ipb.uni-bonn.de/html/projects/bonnetal/lidar/semantic/models/squeezesegV2.tar.gz
-   !tar -xvzf squeezesegV2.tar.gz
-   ```
-
-3. **Export the Model to ONNX:**
-
-   Use a script like the following (adjust paths as needed):
-
-   ```python
-   import torch, yaml
-   from tasks.semantic.modules.segmentator import Segmentator
-
-   model_path = "/content/squeezesegV2/squeezesegV2"
-   with open(model_path + "/arch_cfg.yaml", "r") as f:
-       ARCH = yaml.safe_load(f)
-   with open(model_path + "/data_cfg.yaml", "r") as f:
-       dataset_cfg = yaml.safe_load(f)
-
-   learning_map = dataset_cfg["learning_map"]
-   n_classes = len(set(learning_map.values()))
-   print(f"Number of classes: {n_classes}")
-
-   model = Segmentator(ARCH, n_classes, path=model_path)
-   model.eval()
-
-   height = ARCH["dataset"]["sensor"]["img_prop"]["height"]
-   width = ARCH["dataset"]["sensor"]["img_prop"]["width"]
-   dummy_input = torch.randn(1, 5, height, width)
-   dummy_mask = torch.ones(1, height, width)
-
-   onnx_path = "/content/squeezesegV2_segmentator.onnx"
-   torch.onnx.export(
-       model,
-       (dummy_input, dummy_mask),
-       onnx_path,
-       export_params=True,
-       opset_version=11,
-       do_constant_folding=True,
-       input_names=["input", "mask"],
-       output_names=["output"],
-       dynamic_axes={"input": {0: "batch_size"}, "mask": {0: "batch_size"}, "output": {0: "batch_size"}}
-   )
-   print(f"Model exported to {onnx_path}")
-   ```
-
-4. **Integrate the ONNX Model:**
-
-   Move the exported ONNX file to the `models` folder and update the SLOAM parameter file (`sloam/params/sloam.yaml`) with the new model path.
+*Note:* The flag `-DBUILD_BENCHMARK=OFF` disables benchmark executables that may lack a `main()` function.
 
 ---
 
-## Running SLOAM
+## 4. Exporting Pretrained Segmentation Models to ONNX
+
+SLOAM uses a segmentation network (e.g., RangeNet++) for tree segmentation. To export a pretrained model to ONNX, follow these steps (e.g., in a Google Colab notebook):
+
+### a. Install ONNX
+
+```python
+!pip install onnx
+```
+
+### b. Download and Extract Pretrained Models
+
+Download pretrained model archives (e.g., squeezesegV2) from the provided links and extract them:
+
+```bash
+!wget http://www.ipb.uni-bonn.de/html/projects/bonnetal/lidar/semantic/models/squeezesegV2.tar.gz
+!tar -xvzf squeezesegV2.tar.gz
+```
+
+### c. Clone the Model Repository (if needed)
+
+If required, clone the RangeNet++/LiDAR-Bonnetal repository:
+
+```bash
+!git clone https://github.com/PRBonn/lidar-bonnetal.git
+```
+
+### d. Export the Model to ONNX
+
+Use a script similar to the following (adjust paths as needed):
+
+```python
+import torch, yaml
+from tasks.semantic.modules.segmentator import Segmentator
+
+model_path = "/content/squeezesegV2/squeezesegV2"
+
+with open(model_path + "/arch_cfg.yaml", "r") as f:
+    ARCH = yaml.safe_load(f)
+with open(model_path + "/data_cfg.yaml", "r") as f:
+    dataset_cfg = yaml.safe_load(f)
+
+# Determine the number of classes from the learning map
+learning_map = dataset_cfg["learning_map"]
+n_classes = len(set(learning_map.values()))
+print(f"Number of classes: {n_classes}")
+
+# Initialize and evaluate the model
+model = Segmentator(ARCH, n_classes, path=model_path)
+model.eval()
+
+height = ARCH["dataset"]["sensor"]["img_prop"]["height"]
+width = ARCH["dataset"]["sensor"]["img_prop"]["width"]
+dummy_input = torch.randn(1, 5, height, width)
+dummy_mask = torch.ones(1, height, width)
+
+onnx_path = "/content/squeezesegV2_segmentator.onnx"
+torch.onnx.export(
+    model,
+    (dummy_input, dummy_mask),
+    onnx_path,
+    export_params=True,
+    opset_version=11,
+    do_constant_folding=True,
+    input_names=["input", "mask"],
+    output_names=["output"],
+    dynamic_axes={"input": {0: "batch_size"}, "mask": {0: "batch_size"}, "output": {0: "batch_size"}}
+)
+print(f"Model exported to {onnx_path}")
+```
+
+### e. Integrate the ONNX Model
+
+Move the exported ONNX model into the `models` folder of your workspace and update the SLOAM parameter file (`sloam/params/sloam.yaml`) to point to this model.
+
+---
+
+## 5. Running SLOAM
+
+You can run SLOAM using Docker or install locally.
 
 ### Docker-Based Run
 
-1. **Build the Docker Image:**
+1. **Build the Docker Image**
+
+   Use the provided script:
 
    ```bash
    ./docker/build_sloam_image.sh
    ```
 
-2. **Configure the Run Script:**
+2. **Configure the Container Run Script**
 
-   Edit `sloam/docker/run_sloam_container.sh` and set:
+   Edit `sloam/docker/run_sloam_container.sh` to set the workspace and bag directories, e.g.:
+
    ```bash
    SLOAMWS="$HOME/ros/sloam_ws"
    BAGS_DIR="$HOME/bags"
    ```
 
-3. **Run the Container:**
+3. **Run the Container**
 
    ```bash
    ./docker/run_sloam_container.sh
    ```
 
-4. **Inside the Container:**
+4. **Inside the Container**
 
-   Verify volume mapping:
+   Verify the shared volume:
+   
    ```bash
    cd /opt/sloam_ws && ls src
    ```
-   Launch SLOAM (for simulated data):
+
+   Launch SLOAM (for simulated data, for example):
+
    ```bash
    tmux
    source devel/setup.bash
    roslaunch sloam run_sim.launch
    ```
+
    In another tmux pane, play a bag file:
+
    ```bash
    cd ../bags
    rosbag play example.bag
@@ -253,61 +319,65 @@ SLOAM uses a segmentation network (e.g., RangeNet++) for tree segmentation. Foll
 
 ### Local Installation
 
-1. **Source the Workspace:**
+1. **Source the Workspace**
 
    ```bash
    source ~/sloam_ws/devel/setup.bash
    ```
 
-2. **Launch SLOAM:**
+2. **Launch SLOAM**
 
    ```bash
-   roslaunch sloam run_sim.launch   # Use run.launch for live sensor data.
+   roslaunch sloam run_sim.launch  # Use run.launch for real sensor data
    ```
 
 ---
 
-## Running LLOL for Odometry
+## 6. Running LLOL for Odometry
 
-LLOL provides the odometry backbone.
+LLOL provides the odometry backbone. Follow these steps:
 
-1. **Run the Ouster Driver:**
+1. **Run the Ouster Driver**
 
    ```bash
    roslaunch ouster_decoder driver.launch
    ```
 
-2. **Run the Ouster Decoder:**
+2. **Run the Ouster Decoder**
 
    ```bash
    roslaunch ouster_decoder decoder.launch
    ```
 
-3. **Run LLOL:**
+3. **Run LLOL**
 
    ```bash
    roslaunch llol llol.launch
    ```
-   For multithreaded mode with timing output every 5 seconds:
+
+   For multithreaded mode with timing output every 5 seconds, run:
+
    ```bash
    roslaunch llol llol.launch tbb:=1 log:=5
    ```
 
-4. **Replay a Bag File (if needed):**
+4. **Replay a Bag File (if applicable)**
+
+   In a separate terminal:
 
    ```bash
    rosbag play <path_to_bag_file>
    ```
 
-   Visualize odometry using the provided RViz config (`llol/launch/llol.rviz`).
+   Use RViz with the configuration provided in `llol/launch/llol.rviz` to visualize odometry output.
 
 ---
 
-## Parameter Tuning & Development
+## 7. Parameter Tuning & Development
 
-- SLOAM parameters are primarily defined in the launch files (e.g., `sloam/launch/sloam.launch`, `run.launch`, `run_sim.launch`).
+- Most SLOAM parameters are configured in the launch files (e.g., `sloam/launch/sloam.launch`, `run.launch`, and `run_sim.launch`).
 - Adjust topics, sensor settings, and mapping parameters as needed.
-- For development, use VSCode with the following recommended extensions:
+- For development and debugging, we recommend using VSCode with the following extensions:
   - ROS
   - Docker
   - Remote-Containers
@@ -317,22 +387,20 @@ A sample VSCode debug configuration:
 ```json
 {
   "version": "0.2.0",
-  "configurations": [
-    {
+  "configurations": [{
       "name": "Node SLOAM",
       "request": "launch",
       "target": "/opt/sloam_ws/src/sloam/launch/run_sim.launch",
       "type": "ros"
-    }
-  ]
+  }]
 }
 ```
 
 ---
 
-## Citations
+## 8. Citations
 
-If you use this work in your academic publications, please cite:
+If you use this work in your academic publications, please cite the following:
 
 ### SLOAM
 
@@ -365,6 +433,6 @@ If you use this work in your academic publications, please cite:
 
 ---
 
-This README provides a complete guide for setting up, building, and running the SLOAM and LLOL systems on Ubuntu 20.04 with ROS Noetic. Adjust file paths and parameters as necessary for your environment.
+This README provides a complete guide for setting up, building, and running the SLOAM and LLOL system on Ubuntu 20.04 with ROS Noetic. Adjust file paths and parameters as needed for your environment.
 
 ---
