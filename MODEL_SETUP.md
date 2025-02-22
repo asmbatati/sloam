@@ -16,7 +16,7 @@ sloam_ws/
 
 ## Exporting Pretrained Segmentation Models to ONNX
 
-SLOAM uses a segmentation network (e.g., RangeNet++) for tree segmentation. To export a pretrained model to ONNX, follow these steps (e.g., in a Google Colab notebook):
+SLOAM uses a segmentation network (e.g., RangeNet++) for tree segmentation. To export a pretrained model to ONNX, follow these steps (e.g., in a [Google Colab notebook](models/onnx_models.ipynb)):
 
 ### a. Install ONNX
 
