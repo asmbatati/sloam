@@ -1,4 +1,3 @@
-Below is the README written in Markdown:
 
 ---
 
