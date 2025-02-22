@@ -1,26 +1,33 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.8)
 project(sloam_msgs)
 
-find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  std_msgs
-  geometry_msgs
-  sensor_msgs
+# Find ament and rosidl dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+
+# List the message files (assumes they live in the "msg" folder)
+set(msg_files
+  "msg/ROSCylinder.msg"
+  "msg/ROSGround.msg"
+  "msg/ROSScan.msg"
+  "msg/ROSSweep.msg"
+  "msg/ROSSubMap.msg"
+  "msg/ROSObservation.msg"
+  "msg/ObservationPair.msg"
+  "msg/LoopClosure.msg"
 )
 
-add_message_files(DIRECTORY msg FILES
-    ROSCylinder.msg
-    ROSGround.msg
-    ROSScan.msg
-    ROSSweep.msg
-    ROSSubMap.msg
-    ROSObservation.msg
-    ObservationPair.msg
-    LoopClosure.msg
+# Generate interfaces with dependencies
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
+  DEPENDENCIES std_msgs geometry_msgs sensor_msgs
 )
 
-generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)
+# Export dependencies for downstream packages
+ament_export_dependencies(rosidl_default_runtime)
 
-catkin_package(
-	CATKIN_DEPENDS message_runtime std_msgs geometry_msgs sensor_msgs
-)
+ament_package()
+

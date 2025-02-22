@@ -1,40 +1,59 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>sloam</name>
   <version>0.0.0</version>
-  <description>The SLOAM package</description>
+  <description>The SLOAM package migrated to ROS 2.</description>
 
-  <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <maintainer email="guinardari@usp.br">Guilherme Vicentim</maintainer>
-
-
-  <!-- One license tag required, multiple allowed, one license per tag -->
   <license>Penn Software License</license>
 
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>message_generation</build_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <depend>roscpp</depend>
-  <depend>Eigen</depend>
-  <depend>glog</depend>
-  <depend>sensor_msgs</depend>
-  <depend>geometry_msgs</depend>
-  <depend>std_msgs</depend>
-  <depend>sloam_msgs</depend>
-  <depend>nodelet</depend>
-  <depend>ceres</depend>
-  <depend>tf2</depend>
-  <depend>tf2_ros</depend>
-  <depend>tf2_eigen</depend>
-  <depend>tf2_geometry_msgs</depend>
-  <depend>tf</depend>
-  <depend>pcl_ros</depend>
-  <depend>pcl_conversions</depend>
+  <!-- Build dependencies -->
+  <build_depend>rclcpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>tf2_geometry_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>image_transport</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>tf2_ros</build_depend>
+  <build_depend>tf2_eigen</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>ceres-solver</build_depend>
+  <build_depend>opencv</build_depend>
+  <build_depend>eigen3</build_depend>
+  <build_depend>glog</build_depend>
+  <build_depend>fmt</build_depend>
+  <build_depend>sloam_msgs</build_depend>
 
-  <!-- The export tag contains other, unspecified, tags -->
+  <!-- External libraries (expected to be installed on your system) -->
+  <build_depend>Boost</build_depend>
+  <build_depend>Sophus</build_depend>
+
+  <!-- Run-time dependencies -->
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>tf2_geometry_msgs</exec_depend>
+  <exec_depend>cv_bridge</exec_depend>
+  <exec_depend>image_transport</exec_depend>
+  <exec_depend>pcl_conversions</exec_depend>
+  <exec_depend>pcl_ros</exec_depend>
+  <exec_depend>tf2_ros</exec_depend>
+  <exec_depend>tf2_eigen</exec_depend>
+  <exec_depend>tf2</exec_depend>
+  <exec_depend>ceres-solver</exec_depend>
+  <exec_depend>opencv</exec_depend>
+  <exec_depend>eigen3</exec_depend>
+  <exec_depend>glog</exec_depend>
+  <exec_depend>fmt</exec_depend>
+  <exec_depend>sloam_msgs</exec_depend>
+
   <export>
-    <!-- Other tools can request additional information be placed here -->
-    <nodelet plugin="${prefix}/nodelet_plugins.xml" />
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
