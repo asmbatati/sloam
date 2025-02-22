@@ -5,6 +5,7 @@
 
 > **Note:** 1st, ensure to look at [docker setup](DOCKER_SETUP.md) or [local setup](LOCAL_SETUP.md) to setup the workspace. Then, ensure to follow [segmenation model setup](MODEL_SETUP.md) to make the model file.
 
+> **Note:** Each time you run the container, you will have to make the following steps
 ---
 
 ## Dependency Installation
