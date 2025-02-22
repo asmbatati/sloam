@@ -1,9 +1,8 @@
 ---
 
-## Workspace Setup
-
+## Workspace Setup:
+---
 Create a ROS workspace with the following structure on your host machine:
-
 ```
 sloam_ws/
  ├── src/
@@ -85,6 +84,7 @@ torch.onnx.export(
 )
 print(f"Model exported to {onnx_path}")
 ```
+---
 
 ### e. Integrate the ONNX Model
 
