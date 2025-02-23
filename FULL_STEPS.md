@@ -149,7 +149,13 @@ mkdir build && cd build
 cmake -DBUILD_SOPHUS_TESTS=OFF -DBUILD_SOPHUS_EXAMPLES=OFF -DCMAKE_CXX_STANDARD=17 ..
 sudo make install
 ```
+### Verify
 
+```bash
+sudo find /usr -name abslConfig.cmake 2>/dev/null
+sudo find /usr -name spdlogConfig.cmake 2>/dev/null
+sudo find /usr -name benchmarkConfig.cmake 2>/dev/null
+```
 ---
 
 ## Cloning and Building the ROS Workspace
