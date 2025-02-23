@@ -119,7 +119,7 @@ sudo make install
 
 Clean any previous builds and build with the proper dependency paths:
 ```bash
-cd ~/sloam_ws
+cd /opt/sloam_ws
 rm -rf build devel
 catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release \
   -Dabsl_DIR=/usr/lib/x86_64-linux-gnu/cmake/absl \
