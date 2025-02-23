@@ -26,7 +26,7 @@ sloam_ws/
 mkdir -p ~/sloam_ws/src && cd ~/sloam_ws/src
 git clone https://github.com/KumarRobotics/sloam.git
 git clone https://github.com/KumarRobotics/ouster_decoder.git
-git clone https://github.com/ouster-lidar/ouster-ros.git
+git clone --recurse-submodules https://github.com/ouster-lidar/ouster-ros.git
 git clone https://github.com/versatran01/llol.git
 mkdir models  # Create the models folder
 ```
