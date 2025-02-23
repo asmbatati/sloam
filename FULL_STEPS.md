@@ -192,6 +192,9 @@ catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release \
   -Dspdlog_DIR=/usr/lib/x86_64-linux-gnu/cmake/spdlog \
   -DBUILD_BENCHMARK=OFF
 ```
+```bash
+catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release   -Dabsl_DIR=/usr/lib/x86_64-linux-gnu/cmake/absl   -Dbenchmark_DIR=/usr/lib/x86_64-linux-gnu/cmake/benchmark   -Dspdlog_DIR=/usr/lib/x86_64-linux-gnu/cmake/spdlog
+```
 
 *Note:* The flag `-DBUILD_BENCHMARK=OFF` disables benchmark executables that may lack a `main()` function.
 
