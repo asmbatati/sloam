@@ -95,7 +95,10 @@ sudo cmake --build . --target install
 ```
 
 Verify that the configuration file is installed at:  
-`/usr/lib/x86_64-linux-gnu/cmake/absl/abslConfig.cmake`
+`/usr/lib/x86_64-linux-gnu/cmake/absl/abslConfig.cmake` using:
+```bash
+sudo find /usr -name abslConfig.cmake 2>/dev/null
+```
 
 ### Sophus
 
@@ -108,7 +111,6 @@ mkdir build && cd build
 cmake -DBUILD_SOPHUS_TESTS=OFF -DBUILD_SOPHUS_EXAMPLES=OFF -DCMAKE_CXX_STANDARD=17 ..
 sudo make install
 ```
-
 ---
 
 ## Build the Workspace
