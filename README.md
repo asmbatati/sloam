@@ -19,20 +19,30 @@ sudo apt-get install -y \
     libeigen3-dev \
     git \
     python3-catkin-tools \
-    ros-noetic-pcl-ros \
-    ros-noetic-rviz \
     build-essential \
     libjsoncpp-dev \
     libspdlog-dev \
     libcurl4-openssl-dev \
     libpcap-dev \
-    cmake
+    cmake \
+    libbenchmark-dev
 ```
 
 Install tf:
 
 ```bash
-sudo apt-get install ros-noetic-rqt*
+sudo apt-get update
+sudo apt-get install -y \
+    ros-noetic-pcl-ros \
+    ros-noetic-rviz \
+    ros-noetic-rqt* \
+    ros-noetic-move-base \
+    ros-noetic-flir-camera-description \
+    ros-noetic-pointgrey-camera-description \
+    ros-noetic-velodyne-description \
+    ros-noetic-lms1xx \
+    ros-noetic-sick-tim \
+    ros-noetic-xacro
 ```
 
 Then, update rosdep and install additional ROS dependencies:
@@ -129,6 +139,11 @@ catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release \
 source devel/setup.bash
 ```
 *Note:* The flag `-DBUILD_BENCHMARK=OFF` disables benchmark executables that may lack a `main()` function.
+
+With benchmark:
+```bash
+catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release   -Dabsl_DIR=/usr/lib/x86_64-linux-gnu/cmake/absl   -Dbenchmark_DIR=/usr/lib/x86_64-linux-gnu/cmake/benchmark   -Dspdlog_DIR=/usr/lib/x86_64-linux-gnu/cmake/spdlog
+```
 
 ### For later times:
 
