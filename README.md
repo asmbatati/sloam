@@ -113,8 +113,9 @@ sudo make install
 
 ## Build the Workspace
 
-Clean any previous builds and build with the proper dependency paths:
+### For the first time after entering the container:
 
+Clean any previous builds and build with the proper dependency paths:
 ```bash
 cd ~/sloam_ws
 rm -rf build devel
@@ -123,15 +124,19 @@ catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release \
   -Dbenchmark_DIR=/usr/lib/x86_64-linux-gnu/cmake/benchmark \
   -Dspdlog_DIR=/usr/lib/x86_64-linux-gnu/cmake/spdlog \
   -DBUILD_BENCHMARK=OFF
+source devel/setup.bash
 ```
-
 *Note:* The flag `-DBUILD_BENCHMARK=OFF` disables benchmark executables that may lack a `main()` function.
 
-## Source the Workspace
+### For later times:
 
-   ```bash
-   source ~/sloam_ws/devel/setup.bash
-   ```
+```bash
+cd ~/sloam_ws
+catkin_make --cmake-args -DCMAKE_BUILD_TYPE=Release
+source devel/setup.bash
+```
+
+## Launch
 
 1. **Run the Ouster Driver**
 
