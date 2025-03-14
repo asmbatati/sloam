@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Set the model path parameter BEFORE including run_sim.launch -->
+  <param name="sloam/seg_model_path" value="/opt/sloam_ws/src/models/darknet53_segmentator.onnx" />
+  
+  <!-- Launch the forest simulation with robot -->
+  <include file="$(find forest_simulation)/launch/forest_simulation.launch" />
+  
+  <!-- Override other SLOAM parameters for our forest robot setup -->
+  <rosparam>
+    sloam:
+      cloud_topic: /forest_robot/velodyne_points
+      odom_topic: /odom
+      debug_mode: true
+      do_destagger: false
+      publish_tf: true
+      map_frame_id: map
+      odom_frame_id: odom
+      robot_frame_id: base_link
+  </rosparam>
+  
+  <!-- Launch SLOAM -->
+  <include file="$(find sloam)/launch/run_sim.launch" />
+  
+  <!-- Add a static transform from world to map if needed -->
+  <node pkg="tf" type="static_transform_publisher" name="world_to_map" 
+        args="0 0 0 0 0 0 world map 100" />
+</launch>

@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Enable 3D LiDAR on Husky -->
+  <env name="HUSKY_LASER_3D_ENABLED" value="1"/>
+  <env name="HUSKY_LASER_3D_TOPIC" value="velodyne_points"/>
+  <env name="HUSKY_SENSOR_ARCH" value="1"/>
+  <env name="HUSKY_SENSOR_ARCH_HEIGHT" value="510"/>
+  
+  <!-- Set important segmentation parameters -->
+  <param name="/sloam/seg_model_path" value="/opt/sloam_ws/src/models/darknet53_segmentator.onnx" />
+  <param name="/sloam/cloud_topic" value="/velodyne_points" />
+  <param name="/sloam/debug_mode" value="true" />
+  
+  <!-- Start Gazebo with the forest world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find forest_simulation)/worlds/forest.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- Spawn Husky robot -->
+  <include file="$(find husky_gazebo)/launch/spawn_husky.launch">
+    <arg name="x" value="0"/>
+    <arg name="y" value="0"/>
+    <arg name="z" value="0.1"/>
+    <arg name="yaw" value="0"/>
+  </include>
+
+  <!-- Launch SLOAM segmentation node only -->
+  <node pkg="sloam" type="sloam_inference_node" name="segmentation" output="screen" />
+  
+  <!-- Launch RVIZ for visualization -->
+  <node pkg="rviz" type="rviz" name="sloam_rviz" output="screen" args="-d $(find sloam)/launch/rviz/segmentation.rviz"/>
+  
+  <!-- Teleop control -->
+  <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">
+    <remap from="cmd_vel" to="/husky_velocity_controller/cmd_vel"/>
+  </node>
+</launch>
