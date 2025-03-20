@@ -23,15 +23,28 @@ sudo apt-get install -y \
   ros-noetic-robot-state-publisher \
   ros-noetic-tf \
   ros-noetic-xacro \
-  ros-noetic-rviz
+  ros-noetic-rviz \
+  ros-noetic-gazebo-ros
 
 # Husky robot dependencies
 sudo apt-get install -y \
   ros-noetic-husky-simulator \
   ros-noetic-husky-gazebo \
   ros-noetic-husky-description \
-  ros-noetic-husky-navigation
+  ros-noetic-husky-navigation \
+  ros-noetic-husky-viz
 
+# Required controller packages
+sudo apt-get install -y \
+  ros-noetic-ros-control \
+  ros-noetic-ros-controllers \
+  ros-noetic-joint-state-controller \
+  ros-noetic-diff-drive-controller \
+  ros-noetic-controller-manager \
+  ros-noetic-robot-localization \
+  ros-noetic-interactive-marker-twist-server \
+  ros-noetic-twist-mux
+  
 # LiDAR drivers
 sudo apt-get install -y \
   ros-noetic-velodyne-simulator

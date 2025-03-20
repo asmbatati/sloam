@@ -1,6 +1,6 @@
 sloam:
-  cloud_topic: /quadrotor/fake_lidar/cloud
-  odom_topic: /quadrotor/odom
+  cloud_topic: /points
+  odom_topic: /odom
   debug_mode: true
   do_destagger: false
   publish_tf: false

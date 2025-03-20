@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Configure Husky with a VLP16 LiDAR and sensor arch -->
+  <env name="HUSKY_SENSOR_ARCH" value="1"/>
+  <env name="HUSKY_SENSOR_ARCH_HEIGHT" value="510"/>
+  <env name="HUSKY_LASER_3D_ENABLED" value="1"/>
+  <env name="HUSKY_LASER_3D_TOPIC" value="velodyne_points"/>
+  <env name="HUSKY_LASER_3D_TOWER" value="1"/>
+  <env name="HUSKY_LASER_3D_PREFIX" value=""/>
+  <env name="HUSKY_LASER_3D_PARENT" value="sensor_arch_mount_link"/>
+  <env name="HUSKY_LASER_3D_XYZ" value="0 0 0"/>
+  <env name="HUSKY_LASER_3D_RPY" value="0 0 0"/>
+  
+  <!-- Start Gazebo with empty world for quicker testing -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- Spawn Husky robot with simplified approach -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find husky_description)/urdf/husky.urdf.xacro'" />
+  
+  <node name="spawn_husky" pkg="gazebo_ros" type="spawn_model" 
+        args="-urdf -param robot_description -model husky -z 0.1" />
+  
+  <!-- Robot state publisher for TF tree -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Launch RVIZ configured for visualizing LiDAR point clouds -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find husky_viz)/rviz/view_robot.rviz" />
+  
+  <!-- Add a node to debug whether the LiDAR is publishing data -->
+  <node name="rostopic_lidar_monitor" pkg="rostopic" type="rostopic" 
+        args="hz /velodyne_points" output="screen" />
+</launch>

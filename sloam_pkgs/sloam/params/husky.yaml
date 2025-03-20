@@ -1,0 +1,9 @@
+sloam:
+  cloud_topic: /points
+  odom_topic: /odometry/filtered
+  debug_mode: true
+  do_destagger: true
+  publish_tf: false
+  map_frame_id: map
+  odom_frame_id: odom
+  robot_frame_id: base_link

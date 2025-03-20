@@ -7,7 +7,7 @@
   <env name="HUSKY_SENSOR_ARCH_HEIGHT" value="510"/>
   
   <!-- Set important segmentation parameters -->
-  <param name="/sloam/seg_model_path" value="/opt/sloam_ws/src/models/darknet53_segmentator.onnx" />
+  <param name="/sloam/seg_model_path" value="/opt/sloam_ws/src/sloam_pkgs/models/squeezesegV2-crf_segmentator.onnx" />
   <param name="/sloam/cloud_topic" value="/velodyne_points" />
   <param name="/sloam/debug_mode" value="true" />
   

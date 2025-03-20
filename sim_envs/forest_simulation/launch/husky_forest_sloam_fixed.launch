@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Load PID gains for Gazebo controller -->
+  <!-- <rosparam file="$(find forest_simulation)/config/husky_control_fix.yaml" command="load"/> -->
+
+  <!-- Load SLOAM configuration from YAML file -->
+  <!-- <rosparam file="$(find sloam)/params/husky.yaml" command="load" /> -->
+
+  <!-- Configure Husky with a VLP16 LiDAR and sensor arch -->
+  <env name="HUSKY_SENSOR_ARCH" value="1"/>
+  <env name="HUSKY_SENSOR_ARCH_HEIGHT" value="510"/>
+  <env name="HUSKY_LASER_3D_ENABLED" value="1"/>
+  <env name="HUSKY_LASER_3D_TOPIC" value="points"/>
+  <env name="HUSKY_LASER_3D_HOST" value="192.168.131.20"/>
+  <env name="HUSKY_LASER_3D_TOWER" value="1"/>
+  <env name="HUSKY_LASER_3D_PREFIX" value=""/>
+  <env name="HUSKY_LASER_3D_PARENT" value="sensor_arch_mount_link"/>
+  <env name="HUSKY_LASER_3D_XYZ" value="0 0 0"/>
+  <env name="HUSKY_LASER_3D_RPY" value="0 0 0"/>
+  
+  <!-- Set important SLOAM parameters - directly use point cloud data -->
+  <param name="/sloam/seg_model_path" value="/opt/sloam_ws/src/sloam_pkgs/models/squeezesegV2-crf_segmentator.onnx" />
+  <param name="/sloam/cloud_topic" value="/points" />
+  <param name="/sloam/odom_topic" value="/odometry/filtered" />
+  <param name="/sloam/map_frame_id" value="map" />
+  <param name="/sloam/odom_frame_id" value="odom" />
+  <param name="/sloam/robot_frame_id" value="base_link" />
+  <param name="/sloam/debug_mode" value="true" />
+  <param name="/sloam/do_destagger" value="true" />
+  
+  <!-- Start Gazebo with the forest world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!-- <arg name="world_name" value="$(find forest_simulation)/worlds/forest.world"/> -->
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+    <arg name="gui" value="true"/>
+    <arg name="headless" value="false"/>
+    <arg name="debug" value="false"/>
+  </include>
+
+  <!-- Spawn Husky robot with simplified approach -->
+  <param name="robot_description" command="$(find xacro)/xacro '$(find husky_description)/urdf/husky.urdf.xacro'" />
+  
+  <!-- Using spawn_model directly instead of the husky_gazebo/spawn_husky.launch file -->
+  <node name="spawn_husky" pkg="gazebo_ros" type="spawn_model" 
+        args="-urdf -param robot_description -model husky -z 0.1" />
+  
+  <!-- Essential TF transformations -->
+  <node pkg="tf" type="static_transform_publisher" name="world_to_map" 
+        args="0 0 0 0 0 0 world map 100" />
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom" 
+        args="0 0 0 0 0 0 map odom 100" />
+  
+  <!-- Robot state publisher for TF tree -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <!-- Launch SLOAM segmentation node -->
+  <node pkg="sloam" type="sloam_inference_node" name="segmentation" output="screen" />
+  
+  <!-- Launch RVIZ for visualization -->
+  <node pkg="rviz" type="rviz" name="sloam_rviz" output="screen" args="-d $(find sloam)/launch/rviz/segmentation.rviz"/>
+  
+  <!-- Teleop control -->
+  <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">
+    <remap from="cmd_vel" to="/husky_velocity_controller/cmd_vel"/>
+  </node>
+</launch>
