@@ -1,4 +1,3 @@
-# sloam
 # Forest Simulation with SLOAM
 
 This ROS package provides a simulated forest environment with a Husky robot for testing the Semantic Lidar Odometry and Mapping (SLOAM) algorithm. The package includes a forest world with pine trees, a Husky robot model with a VLP-16 LiDAR, and launch files to integrate with SLOAM.
@@ -10,89 +9,52 @@ This ROS package provides a simulated forest environment with a Husky robot for 
 - SLOAM packages (`sloam` and `sloam_msgs`) installed in the same workspace
 - ONNX model for tree segmentation
 
-## Installation
+## Installation (Docker Setup)
 
-### 1. Required Packages
-
-Install the required dependencies:
-
+### Create a shared volume
 ```bash
-# Basic ROS packages
-sudo apt-get update
-sudo apt-get install -y \
-  ros-noetic-robot-state-publisher \
-  ros-noetic-tf \
-  ros-noetic-xacro \
-  ros-noetic-rviz \
-  ros-noetic-gazebo-ros
-
-# Husky robot dependencies
-sudo apt-get install -y \
-  ros-noetic-husky-simulator \
-  ros-noetic-husky-gazebo \
-  ros-noetic-husky-description \
-  ros-noetic-husky-navigation \
-  ros-noetic-husky-viz
-
-# Required controller packages
-sudo apt-get install -y \
-  ros-noetic-ros-control \
-  ros-noetic-ros-controllers \
-  ros-noetic-joint-state-controller \
-  ros-noetic-diff-drive-controller \
-  ros-noetic-controller-manager \
-  ros-noetic-robot-localization \
-  ros-noetic-interactive-marker-twist-server \
-  ros-noetic-twist-mux
-  
-# LiDAR drivers
-sudo apt-get install -y \
-  ros-noetic-velodyne-simulator
-
-# Teleoperating the robot 
-sudo apt-get install -y \
-  ros-noetic-teleop-twist-keyboard
+mkdir ~/sloam_shared_volume
+mkdir ~/sloam_bags
 ```
-
-### 2. Building the Workspace
-
-Clone the necessary packages into your workspace:
-
+### Clone the repo
 ```bash
-cd ~/ros/sloam_ws/src
-# Clone this package
-git clone https://github.com/your-repo/forest_simulation.git
-
-# Make sure you have the SLOAM packages
-# git clone https://github.com/your-sloam-repo-url.git sloam
-# git clone https://github.com/your-sloam-msgs-repo-url.git sloam_msgs
-
-# Create directory for segmentation model
-mkdir -p models
+cd ~/sloam_shared_volume
+mkdir sloam_ws
+cd sloam_ws
+mkdir src
+cd src
+git clone https://github.com/asmbatati/sloam.git
 ```
-
-Build the workspace:
-
+### Setup the image
 ```bash
-cd ~/ros/sloam_ws
-catkin_make
-source devel/setup.bash
+cd sloam/docker
+./build_sloam_image.sh
 ```
-
-### 3. Download Segmentation Model
-
-Download the segmentation model from the link in the SLOAM documentation:
-
+### Make alias for entry point
 ```bash
-# Go to models directory
-cd ~/ros/sloam_ws/src/models
-
-# For example:
-# wget -O darknet53_segmentator.onnx https://your-model-url.com
+echo "alias sloam='. ~/sloam_shared_volume/sloam/docker/run_sloam_container.sh'" >> ~/.bashrc
+echo "alias open_sloam='docker exec -it sloam_ros bash'" >> ~/.bashrc
+source ~/.bashrc
 ```
-
-Make sure the model is in ONNX format and compatible with the SLOAM segmentation module.
-
+### Run the container
+First run:
+```bash
+sloam
+```
+From other terminals:
+```bash
+open_sloam
+```
+## After entering the container
+```bash
+cd src
+./install_dependencies.sh
+```
+### Sourcing the Workspace
+```bash
+source ~/.bashrc
+source devel/setup.bash 
+```
 ## Using the Package
 
 ### 1. Testing the Husky Robot in the Forest World (without SLOAM)
@@ -145,26 +107,6 @@ Modify the launch files to tune SLOAM parameters:
 ```bash
 nano ~/ros/sloam_ws/src/forest_simulation/launch/husky_forest_sloam.launch
 ```
-
-## Troubleshooting
-
-### Missing Controller Errors
-
-If you encounter errors related to missing controllers when running the full Husky model:
-
-```bash
-sudo apt-get install ros-noetic-joint-state-controller ros-noetic-diff-drive-controller
-```
-
-### Segmentation Model Loading Issues
-
-If the segmentation model fails to load, check:
-
-1. The model exists in the correct path
-2. Update the path in the launch file:
-   ```xml
-   <param name="/sloam/seg_model_path" value="/correct/path/to/model.onnx" />
-   ```
 
 ### TF Tree Issues
 
