@@ -47,7 +47,8 @@ open_sloam
 ```
 ## After entering the container
 ```bash
-cd /opt/sloam_ws/src
+cd /opt/sloam_ws/src/sloam
+chmod +x install_dependencies.sh
 ./install_dependencies.sh
 ```
 ### Sourcing the Workspace
