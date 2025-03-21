@@ -119,7 +119,7 @@ rosrun tf view_frames
 This will generate a PDF file showing your TF tree to help debug the issue.
 
 ## References
-
-- [SLOAM Repository](https://github.com/your-sloam-repo-url)
+- [SLOAM Repository](https://github.com/KumarRobotics/sloam)
 - [Husky Robot Documentation](https://clearpathrobotics.com/husky-unmanned-ground-vehicle-robot/)
-- [ROS Noetic Documentation](http://wiki.ros.org/noetic)
+- [CTU World Models](https://github.com/ctu-mrs)
+- [More World Models](https://github.com/leonhartyao/gazebo_models_worlds_collection/tree/master)
