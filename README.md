@@ -27,7 +27,7 @@ git clone https://github.com/asmbatati/sloam.git
 ```
 ### Setup the image
 ```bash
-cd sloam/docker
+cd ~/sloam_shared_volume/sloam_ws/src/sloam/docker
 ./build_sloam_image.sh
 ```
 ### Make alias for entry point
@@ -47,11 +47,12 @@ open_sloam
 ```
 ## After entering the container
 ```bash
-cd src
+cd /opt/sloam_ws/src
 ./install_dependencies.sh
 ```
 ### Sourcing the Workspace
 ```bash
+cd /opt/sloam_ws
 source ~/.bashrc
 source devel/setup.bash 
 ```
