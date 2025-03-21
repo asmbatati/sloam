@@ -1,6 +1,6 @@
-CONTAINER_NAME="SLOAM"
+CONTAINER_NAME="sloam"
 SLOAMWS=~/${CONTAINER_NAME}_shared_volume
-BAGS_DIR='~/${CONTAINER_NAME}_bags'
+BAGS_DIR=~/${CONTAINER_NAME}_bags
 
 xhost +local:root # for the lazy and reckless
 docker run -it \
@@ -17,7 +17,5 @@ docker run -it \
     --volume="$SLOAMWS:/opt/sloam_ws" \
     --volume="$BAGS_DIR:/opt/bags" \
     --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" \
-    --volume="/home/$USER/repos:/home/$USER/repos" \
-    --volume="/run/user/1000/gdm/Xauthority:/run/user/1000/gdm/Xauthority:ro" \
     gnardari/sloam:runtime \
     bash

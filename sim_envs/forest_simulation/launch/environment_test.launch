@@ -1,14 +1,16 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- Enable 3D LiDAR on Husky -->
-  <env name="HUSKY_LASER_3D_ENABLED" value="1"/>
-  <env name="HUSKY_LASER_3D_TOPIC" value="velodyne_points"/>
-  <env name="HUSKY_SENSOR_ARCH" value="1"/>
-  <env name="HUSKY_SENSOR_ARCH_HEIGHT" value="510"/>
-  
+
+  <!-- Load PID gains for Gazebo controller -->
+  <rosparam file="$(find forest_simulation)/config/husky_control.yaml" command="load" />
+  <rosparam file="$(find forest_simulation)/config/husky_control_pid.yaml" command="load" />
+
+  <!-- Load SLOAM configuration from YAML file -->
+  <rosparam file="$(find sloam)/params/husky.yaml" command="load" />
+
   <!-- Start Gazebo with the forest world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find forest_simulation)/worlds/forest.world"/>
+    <!-- <arg name="world_name" value="$(find forest_simulation)/worlds/forest.world"/> -->
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
@@ -22,10 +24,11 @@
     <arg name="y" value="0"/>
     <arg name="z" value="0.1"/>
     <arg name="yaw" value="0"/>
+    <arg name="joystick" value="false"/>
   </include>
-  
+
   <!-- Launch RVIZ for visualization -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find husky_viz)/rviz/robot.rviz" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find forest_simulation)/rviz/forest_robot.rviz" required="true" />
   
   <!-- Teleop control -->
   <node name="teleop_twist_keyboard" pkg="teleop_twist_keyboard" type="teleop_twist_keyboard.py" output="screen">

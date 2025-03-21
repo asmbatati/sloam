@@ -93,12 +93,21 @@ if ! grep -q "HUSKY_LASER_3D_ENABLED" ~/.bashrc; then
   echo "export HUSKY_SENSOR_ARCH_RPY=\"0 0 0\"" >> ~/.bashrc
   echo "export HUSKY_LASER_3D_ENABLED=1" >> ~/.bashrc
   echo "export HUSKY_LASER_3D_TOPIC=\"points\"" >> ~/.bashrc
-  # echo "export HUSKY_LASER_3D_HOST=\"192.168.131.20\"" >> ~/.bashrc
+  echo "export HUSKY_LASER_3D_HOST=\"192.168.131.20\"" >> ~/.bashrc
   echo "export HUSKY_LASER_3D_TOWER=1" >> ~/.bashrc
   echo "export HUSKY_LASER_3D_PREFIX=\"\"" >> ~/.bashrc
   echo "export HUSKY_LASER_3D_PARENT=\"sensor_arch_mount_link\"" >> ~/.bashrc
   echo "export HUSKY_LASER_3D_XYZ=\"0 0 0\"" >> ~/.bashrc
   echo "export HUSKY_LASER_3D_RPY=\"0 0 0\"" >> ~/.bashrc
+
+  echo "export HUSKY_LMS1XX_ENABLED=1" >> ~/.bashrc
+  echo "export HUSKY_LMS1XX_TOPIC='front/scan'" >> ~/.bashrc
+  echo "export HUSKY_LMS1XX_IP='192.168.131.20'" >> ~/.bashrc
+  echo "export HUSKY_LMS1XX_PREFIX='front'" >> ~/.bashrc
+  echo "export HUSKY_LMS1XX_PARENT='top_plate_link'" >> ~/.bashrc
+  echo "export HUSKY_LMS1XX_XYZ='0.2206 0.0 0.00635' # standard offset when parent is 'top_plate_link'" >> ~/.bashrc
+  echo "export HUSKY_LMS1XX_RPY='0.0 0.0 0.0' # standard orientation when parent is 'top_plate_link'" >> ~/.bashrc
+
   echo "" >> ~/.bashrc
   
   echo -e "${GREEN}Husky VLP16 environment variables added to .bashrc${NC}"

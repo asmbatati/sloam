@@ -19,12 +19,14 @@
     <arg name="debug" value="false"/>
   </include>
 
-  <!-- Spawn Husky robot with VLP16 LiDAR -->
-  <param name="robot_description" command="$(find xacro)/xacro '$(find husky_description)/urdf/husky.urdf.xacro'" />
-  
-  <!-- Using spawn_model directly -->
-  <node name="spawn_husky" pkg="gazebo_ros" type="spawn_model" 
-        args="-urdf -param robot_description -model husky -z 0.1" />
+  <!-- Spawn Husky robot -->
+  <include file="$(find husky_gazebo)/launch/spawn_husky.launch">
+    <arg name="x" value="0"/>
+    <arg name="y" value="0"/>
+    <arg name="z" value="0.1"/>
+    <arg name="yaw" value="0"/>
+    <arg name="joystick" value="false"/>
+  </include>
   
   <!-- Essential TF transformations -->
   <node pkg="tf" type="static_transform_publisher" name="world_to_map" 
