@@ -25,12 +25,12 @@ git clone https://github.com/asmbatati/sloam.git
 ```
 ### Setup the image
 ```bash
-cd ~/sloam_shared_volume/sloam_ws/src/sloam/docker
+cd ~/sloam_shared_volume/src/sloam/docker
 ./build_sloam_image.sh
 ```
 ### Make alias for entry point
 ```bash
-echo "alias sloam='. ~/sloam_shared_volume/sloam/docker/run_sloam_container.sh'" >> ~/.bashrc
+echo "alias sloam='. ~/sloam_shared_volume/src/sloam/docker/run_sloam_container.sh'" >> ~/.bashrc
 echo "alias open_sloam='docker exec -it sloam_ros bash'" >> ~/.bashrc
 source ~/.bashrc
 ```
