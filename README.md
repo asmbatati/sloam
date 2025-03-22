@@ -19,8 +19,6 @@ mkdir ~/sloam_bags
 ### Clone the repo
 ```bash
 cd ~/sloam_shared_volume
-mkdir sloam_ws
-cd sloam_ws
 mkdir src
 cd src
 git clone https://github.com/asmbatati/sloam.git
