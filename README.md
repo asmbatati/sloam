@@ -60,7 +60,7 @@ source devel/setup.bash
 ### 1. Testing the Husky Robot in the Forest World (without SLOAM)
 
 ```bash
-roslaunch forest_simulation husky_forest_test.launch
+roslaunch forest_simulation environment_test.launch
 ```
 
 This will spawn the Husky robot in the forest world without running SLOAM.
@@ -68,7 +68,7 @@ This will spawn the Husky robot in the forest world without running SLOAM.
 ### 2. Testing Segmentation Only
 
 ```bash
-roslaunch forest_simulation husky_segmentation_test.launch
+roslaunch forest_simulation segmentation_test.launch
 ```
 
 This will:
@@ -77,10 +77,16 @@ This will:
 - Run only the segmentation node from SLOAM
 - Launch RVIZ with a configuration for visualizing segmentation results
 
-### 3. Running Full SLOAM Integration
+### 3. Testing SLOAM Integration
 
 ```bash
-roslaunch forest_simulation husky_forest_sloam.launch
+roslaunch forest_simulation sloam_test.launch
+```
+
+### 4. Running Full SLOAM Integration
+
+```bash
+roslaunch forest_simulation husky_sloam.launch
 ```
 
 This will:
