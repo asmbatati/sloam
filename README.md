@@ -8,6 +8,8 @@ This ROS package provides a simulated forest environment with a Husky robot for 
 - Gazebo 11
 - SLOAM packages (`sloam` and `sloam_msgs`) installed in the same workspace
 - ONNX model for tree segmentation
+- > **Note:** Ensure to follow [segmenation model setup](MODEL_SETUP.md) to make the model file.
+
 
 ## Installation (Docker Setup)
 
