@@ -27,7 +27,7 @@ sloam:
   map_frame_id: map
   odom_frame_id: odom
   robot_frame_id: base_link
-  seg_model_path: /opt/sloam_ws/src/sloam_pkgs/models/squeezesegV2-crf_segmentator.onnx # path to segmentation model
+  seg_model_path: /opt/sloam_ws/src/sloam/sloam_pkgs/models/squeezesegV2-crf_segmentator.onnx # path to segmentation model
   seg_lidar_fov: 22.5 # lidar FOV
   seg_lidar_w: 2048 # lidar width
   seg_lidar_h: 64 # lidar height

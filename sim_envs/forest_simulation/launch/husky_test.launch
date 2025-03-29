@@ -2,7 +2,7 @@
 <launch>
   <!-- Load PID gains for Gazebo controller -->
   <rosparam file="$(find forest_simulation)/config/husky_control.yaml" command="load" />
-  <rosparam file="$(find forest_simulation)/config/husky_control_pid.yaml" command="load" />
+  <!-- <rosparam file="$(find forest_simulation)/config/husky_control_pid.yaml" command="load" /> -->
   <rosparam file="$(find forest_simulation)/config/twist_mux.yaml" command="load" />
 
   <!-- Load SLOAM configuration from YAML file -->
@@ -10,7 +10,6 @@
 
   <!-- Start Gazebo with the forest world -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find forest_simulation)/worlds/forest.world"/>
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
